@@ -26,11 +26,15 @@ public class OutboxRestConfiguration {
       "taskana.adapter.outbox.max.number.of.events";
   private static final String TASKANA_ADAPTER_OUTBOX_DURATION_BETWEEN_TASK_CREATION_RETRIES =
       "taskana.adapter.outbox.duration.between.task.creation.retries";
+  private static final String TASKANA_ADAPTER_OUTBOX_DURATION_LOCK_EXPIRE =
+      "taskana.adapter.outbox.duration.lock.expire";
   private static final String OUTBOX_SYSTEM_PROPERTY = "taskana.outbox.properties";
 
   private static final String OUTBOX_SCHEMA_DEFAULT = "taskana_tables";
   private static final int MAX_NUMBER_OF_EVENTS_DEFAULT = 50;
   private static final Duration DURATION_BETWEEN_TASK_CREATION_RETRIES_DEFAULT =
+      Duration.ofHours(1);
+  private static final Duration DURATION_LOCK_EXPIRE_DEFAULT =
       Duration.ofHours(1);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OutboxRestConfiguration.class);
@@ -150,6 +154,31 @@ public class OutboxRestConfiguration {
             e);
 
         return DURATION_BETWEEN_TASK_CREATION_RETRIES_DEFAULT;
+      }
+    }
+  }
+
+  public static Duration getDurationLockExpire() {
+
+    String durationLockExpireProperty =
+        getInstance().outboxProperties.getProperty(TASKANA_ADAPTER_OUTBOX_DURATION_LOCK_EXPIRE);
+
+    if (durationLockExpireProperty == null || durationLockExpireProperty.isEmpty()) {
+      LOGGER.info(
+          "Couldn't retrieve property entry for duration lock expire, setting to default ");
+      return DURATION_LOCK_EXPIRE_DEFAULT;
+    } else {
+      try {
+        return Duration.parse(durationLockExpireProperty);
+      } catch (Exception e) {
+        LOGGER.warn(
+            String.format(
+                "Attempted to retrieve duration lock expire and caught Exception. "
+                    + "Setting default to %s ",
+                durationLockExpireProperty),
+            e);
+
+        return DURATION_LOCK_EXPIRE_DEFAULT;
       }
     }
   }

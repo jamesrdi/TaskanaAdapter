@@ -1,6 +1,7 @@
 package pro.taskana.adapter.camunda.outbox.rest;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /** POJO that represents an event in the camunda outbox table. */
 public class CamundaTaskEvent implements Serializable {
@@ -14,6 +15,7 @@ public class CamundaTaskEvent implements Serializable {
   private String error;
   private String camundaTaskId;
   private String systemEngineIdentifier;
+  private Instant lockExpiresAt;
 
   public int getId() {
     return id;
@@ -87,6 +89,14 @@ public class CamundaTaskEvent implements Serializable {
     this.systemEngineIdentifier = systemEngineIdentifier;
   }
 
+  public Instant getLockExpiresAt() {
+    return lockExpiresAt;
+  }
+
+  public void setLockExpiresAt(Instant lockExpiresAt) {
+    this.lockExpiresAt = lockExpiresAt;
+  }
+
   @Override
   public String toString() {
     return "CamundaTaskEvent [id="
@@ -97,6 +107,8 @@ public class CamundaTaskEvent implements Serializable {
         + created
         + ", payload="
         + payload
+        + ", lockExpiresAt="
+        + lockExpiresAt
         + ", remainingRetries="
         + remainingRetries
         + ", blockedUntil="
